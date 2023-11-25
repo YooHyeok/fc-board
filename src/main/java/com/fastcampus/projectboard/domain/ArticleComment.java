@@ -22,7 +22,7 @@ import java.util.Objects;
 })
 @EntityListeners(AuditingEntityListener.class) // Auditing동작 어노테이션 필수다!
 @Entity
-public class ArticleComment {
+public class ArticleComment extends AuditingFields {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //MySql의 자동증가값은 IDENTITY방식이다.
     private Long id;
@@ -30,11 +30,6 @@ public class ArticleComment {
     @Setter @ManyToOne(optional = false) // optional하지않는다.(필수값)
     private Article article; // 게시글 (ID)
     @Setter @Column(nullable = false, length = 500) private String content; // 본문
-
-    @CreatedDate @Column(nullable = false) private LocalDateTime createdAt; // 생성 일시
-    @CreatedBy @Column(nullable = false, length = 100) private String createdBy; // 생성자
-    @LastModifiedDate  @Column(nullable = false) private LocalDateTime modifiedAt; // 수정 일시
-    @LastModifiedBy @Column(nullable = false, length = 100) private String modifiedBy; // 수정자
 
     protected ArticleComment() {}
 
