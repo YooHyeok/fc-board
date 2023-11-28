@@ -33,6 +33,10 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    /* Spring Data Rest 관련 디펜던시 추가 */
+    implementation("org.springframework.boot:spring-boot-starter-data-rest")
+    implementation("org.springframework.data:spring-data-rest-hal-explorer") // Data Rest를 시각화해 주는 디펜던시
+    
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

@@ -28,7 +28,9 @@ spring:
       hibernate.default_batch_fetch_size: 100 # 최대 100개단위 벌크 select - 연관관계 매핑되어있는 쿼리를 사용할 때 한번에 벌크로 조회해올수 있게끔 만들어준다. (n+1 -> in쿼리로 조회된다...)
   h2.console.enabled: false # h2 DB 콘솔 사용 여부
   sql.init.mode: always # resources/data.sql 작동 시점 룰 (always : 모든 테스트 기간에 데이터를 밀어 넣게된다.)
-
+  data.rest:
+    base-path: /api # data-rest 의 endPoint ex) //localhost:8080/api
+    detection-strategy: annotated # 리포지토리 감지 전략 - @RepositoryRestResource 감지
 --- #yaml은 ---를 기준으로 여러개의 도큐먼트를 분류하여 만들 수 있다. (spring profile 새로 생성)
 
 spring:
