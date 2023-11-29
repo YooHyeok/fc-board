@@ -1,5 +1,6 @@
 package com.fastcampus.projectboard.controller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * [인테그레이션] 테스트로 작성하는법 : SpringBootTest, AutoConfigureMockMvc
  *  ㄴ API를 실행한 결과가 리포지토리까지 전부 실행시키므로 Hibernate의 Query를 출력한다.
  *     DB에 영향을 주는 테스트로 클래스 상단에 Transactional Annotation필요
+ * 이 테스트는 DB쪽에 모킹(가짜객체)이 되지 않는다
  */
+@Disabled("Spring Data REST 통합 테스트는 불필요하므로 제외시킴") //해당 테스트클래스 밑에 있는 모든 유닛 테스트 메소드들은 실행되지 않게 된다.
 @DisplayName("Data REST - API 테스트")
 @Transactional // 인터그레이션 테스트의 롤백을 위한 어노테이션 선언
 @AutoConfigureMockMvc // Mock MVC존재를 알리는 어노테이션
