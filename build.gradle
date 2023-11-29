@@ -17,6 +17,8 @@ configurations {
     }
 }
 
+print(dependencyManagement)
+
 repositories {
     mavenCentral()
 }
@@ -36,7 +38,18 @@ dependencies {
     /* Spring Data Rest 관련 디펜던시 추가 */
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.data:spring-data-rest-hal-explorer") // Data Rest를 시각화해 주는 디펜던시
-    
+
+    /* queryDsl 설정*/
+    implementation 'com.querydsl:querydsl-jpa'
+    implementation 'com.querydsl:querydsl-core'
+    implementation 'com.querydsl:querydsl-collections'
+    /* querydsl JPAAnnotationProcessor 사용 지정 */
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa"
+    //gradle문법에 의해 상단의 plugin dependency-mamnagement로부터 버전을 읽어들여와 주입해준다.
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api' // java.lang.NoClassDefFoundError (javax.annotation.Generated) 대응 코드
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api' // java.lang.NoClassDefFoundError (javax.annotation.Entity) 대응 코드
+
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
@@ -46,4 +59,32 @@ tasks.named('bootBuildImage') {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+/** QueryDsl 설정부
+ * QClass는 IDE build시 build 디렉토리 안에 파일이 저장된다.
+ * 해당 QClass 파일들을 그레이들 빌드 할때 그레이들 빌드 도구가 스캔하는 영역과
+ * IDE가 빌드를 시도할때 인텔리제이가 스캔하는 영역이 차이가 있다.
+ * 내부적인 차이로 인해 그레이들 빌드 하면서 그레이들이 스캔했던 영역과
+ * 인텔리제이가 스캔하고자 하는 빌드 클래스파일들이 있는 영역들을 한번 더 스캔하면서 중복스캔을 하게 된다.
+ * 따라서 똑같은 클래스를 또 불러오기 때문에 중복 충돌 문제가 발생하게 된다. 위 선언은 이를 방지한다.
+ */
+def generated  = 'src/main/generated' // 빌드 시 저장 경로 변경
+
+
+/** QueryDsl QClass 파일 생성 위치를 지정
+ * 자바컴파일 할때 위 빌드 경로로 SourceOutputDirectory를 바꿔준다.
+ */
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+// java source set 에 querydsl QClass 위치 추가
+sourceSets {
+    main.java.srcDirs += [ generated ]
+}
+
+// gradle clean시에 QClass 디렉토리 삭제
+clean {
+    delete file(generated)
 }
