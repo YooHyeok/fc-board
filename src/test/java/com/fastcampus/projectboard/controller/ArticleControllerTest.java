@@ -24,13 +24,13 @@ class ArticleControllerTest {
         this.mvc = mvc;
     }
 
-    @Disabled("구현중") // 빌드시 테스트 제외 ignore 가능
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 정상 호출")
     @Test
     public void givenNothing_whenRequestingArticlesView_thenReturnsArticlesView() throws Exception {
         mvc.perform(get("/articles"))
                 .andExpect(status().isOk()) //status 200 여부
-                .andExpect(content().contentType(MediaType.TEXT_HTML)) //내용의 타입 view이므로 TEXT-HTML인지 여부
+//                .andExpect(content().contentType(MediaType.TEXT_HTML)) //내용의 타입 view이므로 TEXT-HTML인지 여부
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //호환되는 타입까지 적용시켜주는 옵션이 있다 ex) 스프링부트에서 추가시켜주는 charset=UTF-8
                 .andExpect(view().name("articles/index")) //해당 경로에 view가 있어야함
                 /* 해당 뷰는 데이터가 있어야한다. 게시글 목록이 출력된다는것은 서버에서 게시글 목록을 ModelAttribute로 view에 넘겨줬다는 의미 */
                 .andExpect(model().attributeExists("articles")); //모델 애트리뷰트맵에 해당이름의 키가 있는지 여부
