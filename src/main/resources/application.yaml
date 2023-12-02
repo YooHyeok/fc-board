@@ -31,6 +31,10 @@ spring:
   data.rest:
     base-path: /api # data-rest 의 endPoint ex) //localhost:8080/api
     detection-strategy: annotated # 리포지토리 감지 전략 - @RepositoryRestResource 감지
+  thymeleaf3:
+    decoupled-logic: true
+
+
 --- #yaml은 ---를 기준으로 여러개의 도큐먼트를 분류하여 만들 수 있다. (spring profile 새로 생성)
 
 spring:
