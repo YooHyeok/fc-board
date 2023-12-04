@@ -29,6 +29,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+    /* Spring Configuration Processor dependencies 추가 */
+    annotationProcessor"org.springframework.boot:spring-boot-configuration-processor"
+    /* Thymeleaf dependencies 추가 */
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
 
     /* JPA 및 데이터베이스 관련 디펜던시 추가 */
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
