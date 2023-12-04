@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @ToString
 @EntityListeners(AuditingEntityListener.class) // Auditing동작 어노테이션 필수다!
 @MappedSuperclass
-public class AuditingFields {
+public abstract class AuditingFields {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) // 파싱에 대한 룰 - 실제로 웹 화면에 보여줄 때, 웹 화면으로부터 파라미터를 받아 세팅할때 파싱을 위한 설정
     @CreatedDate
