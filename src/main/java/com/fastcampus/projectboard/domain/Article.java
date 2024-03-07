@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Getter
-@ToString
+@ToString(callSuper = true) // 부모 필드까지 Tostring 적용
 @Table(indexes = { /* 빠르게 서칭이 가능하게끔 인덱스 설정 */
         @Index(columnList = "title"),
         @Index(columnList = "hashtag"),
@@ -22,13 +22,14 @@ public class Article extends AuditingFields {
     private Long id;
 
     /* setter를 긱 필드레벨에 건 이유는 사용자가 특정필드에 접근한 세팅을 하지 못하게끔 막기 위해 (ex: id와 created의 경우 자동값 부여이므로) */
+    @Setter @ManyToOne(optional = false) private UserAccount userAccount; //유저 정보(ID)
     @Setter @Column(nullable = false) private String title; // 제목
     @Setter @Column(nullable = false, length = 10000) private String content; // 본문
     @Setter private String hashtag; // 해시태그
 
     /* 한번만 세팅하기 때문에 final 키워드 사용 가능 양방향 바인딩을 하게되면 강결합 특성때문에 실무에서는 푸는경우가 많다 */
     @ToString.Exclude //circural reference 문제 (순환참조문제)
-    @OrderBy("id") //정렬 기준
+    @OrderBy("createdAt DESC") //정렬 기준
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
@@ -48,7 +49,8 @@ public class Article extends AuditingFields {
      * @param content
      * @param hashtag
      */
-    private Article(String title, String content, String hashtag) {
+    private Article(UserAccount userAccount, String title, String content, String hashtag) {
+        this.userAccount = userAccount;
         this.title = title;
         this.content = content;
         this.hashtag = hashtag;
@@ -64,8 +66,8 @@ public class Article extends AuditingFields {
      * @param hashtag
      * @return
      */
-    public static Article of(String title, String content, String hashtag) {
-        return new Article(title, content, hashtag);
+    public static Article of(UserAccount userAccount, String title, String content, String hashtag) {
+        return new Article(userAccount, title, content, hashtag);
     }
 
     /**
