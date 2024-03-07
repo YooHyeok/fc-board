@@ -137,9 +137,9 @@ class ArticleCommentServiceTest {
                 createUserAccountDto(),
                 content,
                 LocalDateTime.now(),
-                "uno",
+                "yooHyeok",
                 LocalDateTime.now(),
-                "uno"
+                "yooHyeok"
         );
     }
 

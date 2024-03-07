@@ -208,9 +208,9 @@ class ArticleServiceTest {
                 content,
                 hashtag,
                 LocalDateTime.now(),
-                "Uno",
+                "yooHyeok",
                 LocalDateTime.now(),
-                "Uno");
+                "yooHyeok");
     }
 
     private UserAccountDto createUserAccountDto() {
