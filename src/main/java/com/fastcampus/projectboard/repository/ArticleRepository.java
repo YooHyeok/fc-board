@@ -4,6 +4,8 @@ import com.fastcampus.projectboard.domain.Article;
 import com.fastcampus.projectboard.domain.QArticle;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.StringExpression;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -20,6 +22,8 @@ public interface ArticleRepository extends
         , QuerydslPredicateExecutor<Article> // Generic 일반 T 는 Entity
         , QuerydslBinderCustomizer<QArticle> // Generic EntityPath를 상속받은 t 는 QClass
 {
+
+    Page<Article> findByTitle(String title, Pageable pageable);
 
     /**
      * 해당 메소드를 통해 검색에 대한 세부 규칙을 추가한다.
