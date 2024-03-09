@@ -2,4 +2,30 @@
 <thlogic>
     <attr sel="#header" th:replace="header::header"/>
     <attr sel="#footer" th:replace="footer::footer"/>
+
+    <!--th:object를 사용함으로써 th:text에서 attribute를 생략할수 있는 * 문법을 사용하였다. -->
+    <attr sel="#article-main" th:object="${article}">
+        <attr sel="#article-header/h1" th:text="*{title}"></attr>
+        <attr sel="#nickaname" th:text="*{nickname}"></attr>
+        <attr sel="#email" th:text="*{email}"></attr>
+        <attr sel="#created-at" th:text="*{#temporals.format(createdAt,'yyyy-MM-dd:mm:ss')}"></attr>
+        <attr sel="#hashtag" th:text="*{hashtag}"></attr>
+        <attr sel="#article-content/pre" th:text="*{content}"></attr>
+
+        <attr sel="#article-comments" th:remove="all-but-first">
+            <attr sel="li[0]" th:each="articleComments : ${articleComments}">
+                <attr sel="div" th:object="${articleComments}">
+                    <attr sel="strong" th:text="*{nickname}"></attr>
+                    <attr sel="small/time" th:text="*{#temporals.format(createdAt,'yyyy-MM-dd:mm:ss')}"></attr>
+                    <attr sel="p" th:text="*{content}"></attr>
+                </attr>
+            </attr>
+        </attr>
+    </attr>
+   <!-- <attr sel="#article-header/h1" th:text="${article.title}"></attr>
+    <attr sel="#nickaname" th:text="${article.nickname}"></attr>
+    <attr sel="#email" th:text="${article.email}"></attr>
+    <attr sel="#created-at" th:text="${article.createdAt}"></attr>
+    <attr sel="#hashtag" th:text="${article.hashtag}"></attr>
+    <attr sel="#article-content/pre" th:text="${article.content}"></attr>-->
 </thlogic>
