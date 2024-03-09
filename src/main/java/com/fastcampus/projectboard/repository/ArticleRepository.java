@@ -4,6 +4,8 @@ import com.fastcampus.projectboard.domain.Article;
 import com.fastcampus.projectboard.domain.QArticle;
 import com.querydsl.core.types.dsl.DateTimeExpression;
 import com.querydsl.core.types.dsl.StringExpression;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
@@ -20,6 +22,27 @@ public interface ArticleRepository extends
         , QuerydslPredicateExecutor<Article> // Generic 일반 T 는 Entity
         , QuerydslBinderCustomizer<QArticle> // Generic EntityPath를 상속받은 t 는 QClass
 {
+
+    Page<Article> findByTitleContaining(String title, Pageable pageable);
+
+    /**
+     * 내용 검색
+     * Containing : Exact 매치이 아닌 부분(포함) 매치
+     * @param searchKeyword
+     * @param pageable
+     * @return
+     */
+    Page<Article> findByContentContaining(String searchKeyword, Pageable pageable);
+
+    /**
+     * Article의 UserAccount필드 객체탐색 후 userId
+     * @param searchKeyword
+     * @param pageable
+     * @return
+     */
+    Page<Article> findByUserAccount_UserIdContaining(String searchKeyword, Pageable pageable);
+    Page<Article> findByUserAccount_NicknameContaining(String searchKeyword, Pageable pageable);
+    Page<Article> findByHashtag(String searchKeyword, Pageable pageable);
 
     /**
      * 해당 메소드를 통해 검색에 대한 세부 규칙을 추가한다.
@@ -43,4 +66,5 @@ public interface ArticleRepository extends
         bindings.bind(root.createdAt).first(DateTimeExpression::eq); // DataType이 DateTime이다.
         bindings.bind(root.createdBy).first(StringExpression::containsIgnoreCase);
     }
+
 }

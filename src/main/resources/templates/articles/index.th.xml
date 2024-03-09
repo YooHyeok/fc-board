@@ -1,7 +1,18 @@
 <?xml version="1.0"?>
-<thlogic>
+<thlogic> <!-- D Coupled Logic-->
 <!--    <attr sel="header" th:replace="header::header"/>-->
 <!--    <attr sel="footer" th:replace="footer::footer"/>-->
     <attr sel="#header" th:replace="header::header"/>
     <attr sel="#footer" th:replace="footer::footer"/>
+
+    <artr sel="#article-table">
+        <attr sel="tbody" th:remove="all-but-first"> <!-- `remove:all but first` tbody의 첫번째만 tr만 남기고 전부 지운다 -->
+            <attr sel="tr[0]" th:each="article : ${articles}"> <!-- 0번째 tr을 select하여 foreach -->
+                <attr sel="td.title/a" th:text="${article.title}" th:href="@{'/articles/' + ${article.id}}"></attr>
+                <attr sel="td.hashtag" th:text="${article.hashtag}"></attr>
+                <attr sel="td.user-id" th:text="${article.nickname}"></attr>
+                <attr sel="td.created-by/time" th:datetime="${article.createdAt}"></attr>
+            </attr>
+        </attr>
+    </artr>
 </thlogic>
