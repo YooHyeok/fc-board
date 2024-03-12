@@ -4,7 +4,9 @@ import com.fastcampus.projectboard.domain.type.SearchType;
 import com.fastcampus.projectboard.response.ArticleResponse;
 import com.fastcampus.projectboard.response.ArticleWithCommentsResponse;
 import com.fastcampus.projectboard.service.ArticleService;
+import com.fastcampus.projectboard.service.PaginationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
 
 /**
  * /articles/{article-id}
@@ -26,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class ArticleController {
 
     private final ArticleService articleService;
+    private final PaginationService paginationService;
+
 
     @GetMapping // 매핑주소가 베이스 path인 `/articles` 라면 "" 혹은 생략 가능.
     public String articles(
@@ -35,7 +41,12 @@ public class ArticleController {
             ModelMap modelMap
     ) {
         // map을 통해 Article에 대한 모든 정보를 반환용으로만 추출해서 넘긴다.
-        modelMap.addAttribute("articles", articleService.searchArticles(searchType, searchValue, pageable).map(ArticleResponse::from));
+
+        Page<ArticleResponse> articles = articleService.searchArticles(searchType, searchValue, pageable).map(ArticleResponse::from);
+        List<Integer> barNumbers = paginationService.getPaginationBarNumbers(pageable.getPageNumber(), articles.getTotalPages());
+
+        modelMap.addAttribute("articles", articles);
+        modelMap.addAttribute("paginationBarNumbers", barNumbers);
         return "articles/index";
     }
 
@@ -44,6 +55,7 @@ public class ArticleController {
         ArticleWithCommentsResponse article = ArticleWithCommentsResponse.from(articleService.getArticle(articleId));
         modelMap.addAttribute("article", article);
         modelMap.addAttribute("articleComments", article.articleCommentsResponses());
+        modelMap.addAttribute("totalCount", articleService.getArticleCount());
         return "articles/detail";
     }
 }

@@ -5,7 +5,7 @@
     <attr sel="#header" th:replace="header::header"/>
     <attr sel="#footer" th:replace="footer::footer"/>
 
-    <artr sel="#article-table">
+    <attr sel="#article-table">
         <attr sel="tbody" th:remove="all-but-first"> <!-- `remove:all but first` tbody의 첫번째만 tr만 남기고 전부 지운다 -->
             <attr sel="tr[0]" th:each="article : ${articles}"> <!-- 0번째 tr을 select하여 foreach -->
                 <attr sel="td.title/a" th:text="${article.title}" th:href="@{'/articles/' + ${article.id}}"></attr>
@@ -14,5 +14,27 @@
                 <attr sel="td.created-by/time" th:datetime="${article.createdAt}"></attr>
             </attr>
         </attr>
-    </artr>
+    </attr>
+    <attr sel="#pagination">
+        <attr sel="li[0]/a"
+              th:text="'previous'"
+              th:href="@{/articles(page=${articles.number - 1})}"
+              th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
+        /><!--th:href = Link 문법에는 $가 아닌 @{}로 표현하며, 문자열로 묶지않아도 된다.
+        또한 괄호를 사용하여 queryParameter를 표현할 수 있게 된다. (제일 앞에 ?물음표가 채워짐)
+        queryParameter 구분은 ,쉼표로 한다.
+        -->
+        <attr sel="li[1]" th:class="page-item" th:each="pageNumber : ${paginationBarNumbers}">
+            <attr sel="a"
+                  th:text="${pageNumber + 1}"
+                  th:href="@{/articles(page=${pageNumber})}"
+                  th:class="'page-link' + (${articles.number} == ${pageNumber} ? ' disabled' : '')"
+            />
+        </attr>
+        <attr sel="li[2]/a"
+              th:text="'next'"
+              th:href="@{/articles(page=${articles.number + 1})}"
+              th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
+        />
+    </attr>
 </thlogic>
