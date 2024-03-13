@@ -1,6 +1,7 @@
 package com.fastcampus.projectboard.controller;
 
 import com.fastcampus.projectboard.config.SecurityConfig;
+import com.fastcampus.projectboard.domain.type.SearchType;
 import com.fastcampus.projectboard.dto.ArticleWithCommentsDto;
 import com.fastcampus.projectboard.dto.UserAccountDto;
 import com.fastcampus.projectboard.service.ArticleService;
@@ -78,6 +79,29 @@ class ArticleControllerTest {
                 .andExpect(model().attributeExists("articles")) //모델 애트리뷰트맵에 해당이름의 키가 있는지 여부
                 .andExpect(model().attributeExists("paginationBarNumbers"));
         then(articleService).should().searchArticles(eq(null), eq(null), any(Pageable.class)); // should는 1회 호출된다는 내용이 포함되어있음.
+        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
+    }
+
+    @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 검색어와 함께 호출")
+    @Test
+    public void givenSearchKeyword_whenSearchingArticlesView_thenReturnsArticlesView() throws Exception {
+        // Given
+
+        SearchType searchType = SearchType.TITLE;
+        String searchValue = "title";
+        given(articleService.searchArticles(eq(searchType), eq(searchValue), any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(), anyInt())).willReturn(List.of(0, 1, 2, 3, 4)); //임의의 값들로 페이징 테스트
+
+        // When & Then
+        mvc.perform(get("/articles").queryParam("searchType", searchType.name()).queryParam("searchValue", searchValue))
+                .andExpect(status().isOk()) //status 200 여부
+//                .andExpect(content().contentType(MediaType.TEXT_HTML)) //내용의 타입 view이므로 TEXT-HTML인지 여부
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //호환되는 타입까지 적용시켜주는 옵션이 있다 ex) 스프링부트에서 추가시켜주는 charset=UTF-8
+                .andExpect(view().name("articles/index")) //해당 경로에 view가 있어야함
+                /* 해당 뷰는 데이터가 있어야한다. 게시글 목록이 출력된다는것은 서버에서 게시글 목록을 ModelAttribute로 view에 넘겨줬다는 의미 */
+                .andExpect(model().attributeExists("articles")) //모델 애트리뷰트맵에 해당이름의 키가 있는지 여부
+                .andExpect(model().attributeExists("searchTypes"));
+        then(articleService).should().searchArticles(eq(searchType), eq(searchValue), any(Pageable.class)); // should는 1회 호출된다는 내용이 포함되어있음.
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
 
