@@ -6,25 +6,53 @@
     <attr sel="#footer" th:replace="footer::footer"/>
 
     <attr sel="main" th:object="${articles}">
+        <!-- 검색바 영역 -->
+        <attr sel="#search-type" th:remove="all-but-first">
+            <attr sel="option[0]"
+                  th:each="searchType : ${searchTypes}"
+                  th:value="${searchType.name}"
+                  th:text="${searchType.description}"
+                  th:selected="${param.searchType != null && (param.searchType.toString == searchType.name)}"
+            />
+            <!--
+            param: 타임리프에서 지원하는 현재 URL로부터 파라미터를 추출할수 있는 기능이다.
+            ApplicationHttpRequest의 Map<String,Object> parameters 객체이다.
+            (HttpServletRequest의 getParameter메소드도 내부적으로 해당 객체에 접근하여 파라미터값을 가져온다)
+            -->
+        </attr>
+        <attr sel="#search-value" th:value="${param.searchValue}"/>
+
         <!-- 게시글 리스트 영역 -->
         <attr sel="#article-table">
             <!-- thead 타이틀 기준 정렬 -->
             <attr sel="thead/tr">
                 <attr sel="th.title/a" th:text="'제목'" th:href="@{/articles(
                       page=${articles.number},
-                      sort='title' + (*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} != 'DESC' ? ',desc' : ''): ''))}"
+                      sort='title' + (*{sort.getOrderFor('title')} != null ? (*{sort.getOrderFor('title').direction.name} != 'DESC' ? ',desc' : ''): ''),
+                      searchType=${param.searchType},
+                      searchValue=${param.searchValue}
+                      )}"
                 />
                 <attr sel="th.hashtag/a" th:text="'해시태그'" th:href="@{/articles(
                       page=${articles.number},
-                      sort='hashtag' + (*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} != 'DESC' ? ',desc' : ''): ''))}"
+                      sort='hashtag' + (*{sort.getOrderFor('hashtag')} != null ? (*{sort.getOrderFor('hashtag').direction.name} != 'DESC' ? ',desc' : ''): ''),
+                      searchType=${param.searchType},
+                      searchValue=${param.searchValue}
+                      )}"
                 />
                 <attr sel="th.user-id/a" th:text="'작성자'" th:href="@{/articles(
                       page=${articles.number},
-                      sort='userAccount.userId' + (*{sort.getOrderFor('userAccount.userId')} != null ? (*{sort.getOrderFor('userAccount.userId').direction.name} != 'DESC' ? ',desc' : ''): ''))}"
+                      sort='userAccount.userId' + (*{sort.getOrderFor('userAccount.userId')} != null ? (*{sort.getOrderFor('userAccount.userId').direction.name} != 'DESC' ? ',desc' : ''): ''),
+                      searchType=${param.searchType},
+                      searchValue=${param.searchValue}
+                      )}"
                 />
                 <attr sel="th.created-at/a" th:text="'작성일'" th:href="@{/articles(
                       page=${articles.number},
-                      sort='createdAt' + (*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} != 'DESC' ? ',desc' : ''): ''))}"
+                      sort='createdAt' + (*{sort.getOrderFor('createdAt')} != null ? (*{sort.getOrderFor('createdAt').direction.name} != 'DESC' ? ',desc' : ''): ''),
+                      searchType=${param.searchType},
+                      searchValue=${param.searchValue}
+                      )}"
                 />
             </attr>
             <!-- tbody 리스트 출력 -->
@@ -42,7 +70,7 @@
         <attr sel="#pagination">
             <attr sel="li[0]/a"
                   th:text="'previous'"
-                  th:href="@{/articles(page=${articles.number - 1})}"
+                  th:href="@{/articles(page=${articles.number - 1}, searchType=${param.searchType}, searchValue=${param.searchValue})}"
                   th:class="'page-link' + (${articles.number} <= 0 ? ' disabled' : '')"
             /><!--th:href = Link 문법에는 $가 아닌 @{}로 표현하며, 문자열로 묶지않아도 된다.
             또한 괄호를 사용하여 queryParameter를 표현할 수 있게 된다. (제일 앞에 ?물음표가 채워짐)
@@ -51,13 +79,13 @@
             <attr sel="li[1]" th:class="page-item" th:each="pageNumber : ${paginationBarNumbers}">
                 <attr sel="a"
                       th:text="${pageNumber + 1}"
-                      th:href="@{/articles(page=${pageNumber})}"
+                      th:href="@{/articles(page=${pageNumber}, searchType=${param.searchType}, searchValue=${param.searchValue})}"
                       th:class="'page-link' + (${articles.number} == ${pageNumber} ? ' disabled' : '')"
                 />
             </attr>
             <attr sel="li[2]/a"
                   th:text="'next'"
-                  th:href="@{/articles(page=${articles.number + 1})}"
+                  th:href="@{/articles(page=${articles.number + 1}, searchType=${param.searchType}, searchValue=${param.searchValue})}"
                   th:class="'page-link' + (${articles.number} >= ${articles.totalPages - 1} ? ' disabled' : '')"
             />
         </attr>
