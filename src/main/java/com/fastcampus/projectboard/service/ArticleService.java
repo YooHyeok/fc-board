@@ -1,10 +1,12 @@
 package com.fastcampus.projectboard.service;
 
 import com.fastcampus.projectboard.domain.Article;
-import com.fastcampus.projectboard.domain.type.SearchType;
+import com.fastcampus.projectboard.domain.UserAccount;
+import com.fastcampus.projectboard.domain.constant.SearchType;
 import com.fastcampus.projectboard.dto.ArticleDto;
 import com.fastcampus.projectboard.dto.ArticleWithCommentsDto;
 import com.fastcampus.projectboard.repository.ArticleRepository;
+import com.fastcampus.projectboard.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -14,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor // lombok의 필수 필드(final)에 대한 생성자를 자동으로 만들어준다.
 @Transactional
 @Service
 public class ArticleService {
+    private final UserAccountRepository userAccountRepository;
 
     private final ArticleRepository articleRepository;
 
@@ -54,18 +56,38 @@ public class ArticleService {
 
     }
 
+    /**
+     * 상세 조회
+     * 상세 조회이므로 댓글과 함께 조회한다.
+     * @param articleId
+     * @return
+     */
     @Transactional(readOnly = true)
-    public ArticleWithCommentsDto getArticle(long articleId) {
+    public ArticleWithCommentsDto getArticleWithComments(long articleId) {
         return articleRepository.findById(articleId)
                 .map(ArticleWithCommentsDto::from)
                 .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
-    public void saveArticle(ArticleDto dto) {
-        articleRepository.save(dto.toEntity());
+    /**
+     * 수정용 조회
+     * 수정용 이므로 댓글이 필요없게된다.
+     * @param articleId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ArticleDto getArticle(Long articleId) {
+        return articleRepository.findById(articleId)
+                .map(ArticleDto::from)
+                .orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + articleId));
     }
 
-    public void updateArticle(ArticleDto dto) {
+    public void saveArticle(ArticleDto dto) {
+        UserAccount userAccount = userAccountRepository.getReferenceById(dto.userAccountDto().userId());
+        articleRepository.save(dto.toEntity(userAccount));
+    }
+
+    public void updateArticle(Long articleId, ArticleDto dto) {
         /**
          * getReferenceById : 이전버전의 getOne메소드와 같다.
          * findById를 할 경우 select query가 기본으로 호출되기 때문에 사용했다.
@@ -74,7 +96,7 @@ public class ArticleService {
          */
 //        Article article = articleRepository.findById(dto.id()).orElseThrow(() -> new EntityNotFoundException("게시글이 없습니다 - articleId: " + dto.id()));
         try {
-            Article article = articleRepository.getReferenceById(dto.id());
+            Article article = articleRepository.getReferenceById(articleId);
             if (dto.title() != null) article.setTitle(dto.title());
             if (dto.content() != null) article.setContent(dto.content());
             article.setHashtag(dto.hashtag());
