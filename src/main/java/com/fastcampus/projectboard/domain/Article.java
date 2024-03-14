@@ -22,7 +22,7 @@ public class Article extends AuditingFields {
     private Long id;
 
     /* setter를 긱 필드레벨에 건 이유는 사용자가 특정필드에 접근한 세팅을 하지 못하게끔 막기 위해 (ex: id와 created의 경우 자동값 부여이므로) */
-    @Setter @ManyToOne(optional = false) private UserAccount userAccount; //유저 정보(ID)
+    @Setter @ManyToOne(optional = false) @JoinColumn(name="userId") private UserAccount userAccount; //유저 정보(ID)
     @Setter @Column(nullable = false) private String title; // 제목
     @Setter @Column(nullable = false, length = 10000) private String content; // 본문
     @Setter private String hashtag; // 해시태그
