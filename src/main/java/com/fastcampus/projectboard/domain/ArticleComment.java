@@ -21,7 +21,7 @@ public class ArticleComment extends AuditingFields {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //MySql의 자동증가값은 IDENTITY방식이다.
     private Long id;
 
-    @Setter @ManyToOne(optional = false) private UserAccount userAccount; //유저 정보(ID)
+    @Setter @ManyToOne(optional = false) @JoinColumn(name="userId") private UserAccount userAccount; //유저 정보(ID)
 
     @Setter @ManyToOne(optional = false) // optional하지않는다.(필수값 - innerJoin)
     private Article article; // 게시글 (ID)
