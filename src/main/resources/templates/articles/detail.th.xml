@@ -3,8 +3,17 @@
     <attr sel="#header" th:replace="header::header"/>
     <attr sel="#footer" th:replace="footer::footer"/>
 
+    <!-- [게시글 내용 영역] -->
+<!-- <attr sel="#article-header/h1" th:text="${article.title}"></attr>
+     <attr sel="#nickaname" th:text="${article.nickname}"></attr>
+     <attr sel="#email" th:text="${article.email}"></attr>
+     <attr sel="#created-at" th:text="${article.createdAt}"></attr>
+     <attr sel="#hashtag" th:text="${article.hashtag}"></attr>
+    <attr sel="#article-content/pre" th:text="${article.content}"></attr>-->
+
     <!--th:object를 사용함으로써 th:text에서 attribute를 생략할수 있는 * 문법을 사용하였다. -->
     <attr sel="#article-main" th:object="${article}">
+        <!--게시글 내용 영역-->
         <attr sel="#article-header/h1" th:text="*{title}"></attr>
         <attr sel="#nickaname" th:text="*{nickname}"></attr>
         <attr sel="#email" th:text="*{email}"></attr>
@@ -12,22 +21,34 @@
         <attr sel="#hashtag" th:text="*{hashtag}"></attr>
         <attr sel="#article-content/pre" th:text="*{content}"></attr>
 
+        <!-- [게시글 수정/삭제 버튼 영역] -->
         <attr sel="#article-buttons">
             <attr sel="#delete-article-form" th:action="'/articles/' + *{id} + '/delete'" th:method="post">
                 <attr sel="#update-article" th:href="'/articles/' + *{id} + '/form'" />
             </attr>
         </attr>
 
+        <!-- [댓글 입력 영역] -->
+        <!-- 추가/수정/삭제 후 redirect를 위한 게시글번호 input hidden -->
+        <attr sel=".article-id" th:name="articleId" th:value="*{id}" />
+        <!-- form에 action과 method부여 및 textArea에 name속성 부여 -->
+        <attr sel="#comment-form" th:action="@{/comments/new}" th:method="post">
+            <attr sel="#comment-textbox" th:name="content" />
+        </attr>
+
+        <!-- [댓글 목록 영역]-->
         <attr sel="#article-comments" th:remove="all-but-first">
-            <attr sel="li[0]" th:each="articleComments : ${articleComments}">
-                <attr sel="div" th:object="${articleComments}">
-                    <attr sel="strong" th:text="*{nickname}"></attr>
-                    <attr sel="small/time" th:text="*{#temporals.format(createdAt,'yyyy-MM-dd:mm:ss')}"></attr>
-                    <attr sel="p" th:text="*{content}"></attr>
+            <attr sel="li[0]" th:each="articleComment : ${articleComments}">
+                <!-- 삭제버튼을 위한 form에 action, method 부여 -->
+                <attr sel="form" th:action="'/comments/' + ${articleComment.id} + '/delete'" th:method="post">
+                    <attr sel="div/strong" th:text="${articleComment.nickname}" />
+                    <attr sel="div/small/time" th:datetime="${articleComment.createdAt}" th:text="${#temporals.format(articleComment.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
+                    <attr sel="div/p" th:text="${articleComment.content}" />
                 </attr>
             </attr>
         </attr>
 
+        <!-- [이전,다음글 페이지 네이션 영역] -->
         <attr sel="#pagination">
             <attr sel="ul">
                 <attr sel="li[0]/a"
@@ -41,10 +62,5 @@
             </attr>
         </attr>
     </attr>
-   <!-- <attr sel="#article-header/h1" th:text="${article.title}"></attr>
-    <attr sel="#nickaname" th:text="${article.nickname}"></attr>
-    <attr sel="#email" th:text="${article.email}"></attr>
-    <attr sel="#created-at" th:text="${article.createdAt}"></attr>
-    <attr sel="#hashtag" th:text="${article.hashtag}"></attr>
-    <attr sel="#article-content/pre" th:text="${article.content}"></attr>-->
+
 </thlogic>
