@@ -21,8 +21,8 @@
         <attr sel="#hashtag" th:text="*{hashtag}"></attr>
         <attr sel="#article-content/pre" th:text="*{content}"></attr>
 
-        <!-- [게시글 수정/삭제 버튼 영역] -->
-        <attr sel="#article-buttons">
+        <!-- [게시글 수정/삭제 버튼 영역] - 로그인 인증이 되었고, 인증된 사용자와 댓글을 단 사용자가 일치할 경우에 출력 -->
+        <attr sel="#article-buttons" th:if="${#authorization.expression('isAuthenticated()')} and *{userId} == ${#authentication.name}">
             <attr sel="#delete-article-form" th:action="'/articles/' + *{id} + '/delete'" th:method="post">
                 <attr sel="#update-article" th:href="'/articles/' + *{id} + '/form'" />
             </attr>
@@ -44,6 +44,8 @@
                     <attr sel="div/strong" th:text="${articleComment.nickname}" />
                     <attr sel="div/small/time" th:datetime="${articleComment.createdAt}" th:text="${#temporals.format(articleComment.createdAt, 'yyyy-MM-dd HH:mm:ss')}" />
                     <attr sel="div/p" th:text="${articleComment.content}" />
+                    <!-- 로그인 인증이 되었고, 인증된 사용자와 댓글을 단 사용자가 일치할 경우에 출력-->
+                    <attr sel="button" th:if="${#authorization.expression('isAuthenticated()')} and ${articleComment.userId} == ${#authentication.name}" />
                 </attr>
             </attr>
         </attr>
