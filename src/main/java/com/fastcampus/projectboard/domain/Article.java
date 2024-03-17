@@ -78,9 +78,9 @@ public class Article extends AuditingFields {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Article article)) return false;
+        if (!(o instanceof Article that)) return false;
 //        return id.equals(article.id); // 영속성 전 (insert 전 - id부여안됨)일때 null이다. 아래와 같이 null을 체크할 필요가 있다.
-        return id != null && id.equals(article.id); // 지금 막 만든, 아직 영속화 되지 않은 엔티티는 모두 동등성 검사를 탈락하게된다.
+        return id != null && id.equals(that.getId()); // 지금 막 만든, 아직 영속화 되지 않은 엔티티는 모두 동등성 검사를 탈락하게된다.
     }
 
     @Override
