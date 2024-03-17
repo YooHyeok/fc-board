@@ -7,17 +7,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("testdb") // application.yaml에 전역 설정된 testdb profile을 사용한다.
 //@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) //자동으로 testdb를 띄우지않게끔 한다. application.yaml에 전역 설정됨.
 @DisplayName("JPA 연결 테스트")
-@Import(JpaConfig.class) //Auditing을 위한 Import
+@Import(JpaRepositoryTest.TestJpaConfig.class) //Auditing을 위한 Import
 @DataJpaTest // slice Test
 class JpaRepositoryTest {
     private final ArticleRepository articleRepository;
@@ -99,6 +104,21 @@ class JpaRepositoryTest {
         // Then
         assertThat(articleRepository.count()).isEqualTo(previousArticleCount -1);
         assertThat(articleCommentRepository.count()).isEqualTo(previousArticleCommentCount - deletedCommentSize); // 전체 댓글 갯수 : 전체갯수 - 삭제된 게시글 갯수
+
+    }
+
+    /**
+     * JPA Test에서 createBy에 들어갈 정보를 지정했다.
+     * JpaConfig.class에서 등록한 auditorAware을 테스트용도로 치환
+     * Security와 완전히 분리되서 동작할것이다.
+     */
+    @EnableJpaAuditing
+    @TestConfiguration //Configuration으로 등록하되, Test할때만 등록한다.
+    public static class TestJpaConfig {
+        @Bean
+        public AuditorAware<String> auditorAware() {
+            return () -> Optional.of("YooHyeok");
+        }
 
     }
 }

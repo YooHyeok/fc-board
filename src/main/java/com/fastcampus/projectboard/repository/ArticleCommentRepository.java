@@ -28,6 +28,7 @@ public interface ArticleCommentRepository extends
      */
     List<ArticleComment> findByArticle_Id(Long articleId);
 
+    void deleteByIdAndUserAccount_UserId(Long articleCommentId, String userId);
     /**
      * 해당 메소드를 통해 검색에 대한 세부 규칙을 추가
      */
