@@ -2,4 +2,10 @@
 <thlogic>
     <attr sel="#home" th:href="@{/}" />
     <attr sel="#hashtag" th:href="@{/articles/search-hashtag}" />
+    <!-- sec: thymeleaf에서 제공하는 Security 관련 속성이다. -->
+    <!-- authorize: 인가(권한) - isAuthenticated()에 의해 인증여부 파악 => 인증되었다면 보여준다. -->
+    <!-- authentication: 인증 - Principal에 인증받는 순간 ID가 name으로 지정되어있음 -->
+    <attr sel="#username" sec:authorize="isAuthenticated()" sec:authentication="name" />
+    <attr sel="#login" sec:authorize="!isAuthenticated()" th:href="@{/login}" />
+    <attr sel="#logout" sec:authorize="isAuthenticated()" th:href="@{/logout}" />
 </thlogic>

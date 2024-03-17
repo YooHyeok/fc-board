@@ -68,7 +68,7 @@
             </attr>
         </attr>
         <!-- 글쓰기 버튼 -->
-        <attr sel="#write-article" th:href="@{/articles/form}" />
+        <attr sel="#write-article" sec:authorize="isAuthenticated()" th:href="@{/articles/form}" />
         <!-- 페이징 영역 -->
         <attr sel="#pagination">
             <attr sel="li[0]/a"

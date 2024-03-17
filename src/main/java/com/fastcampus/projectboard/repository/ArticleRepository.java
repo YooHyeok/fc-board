@@ -46,6 +46,8 @@ public interface ArticleRepository extends
     Page<Article> findByUserAccount_NicknameContaining(String searchKeyword, Pageable pageable);
     Page<Article> findByHashtag(String searchKeyword, Pageable pageable);
 
+    void deleteByIdAndUserAccount_UserId(Long articleId, String userId);
+
     /**
      * 해당 메소드를 통해 검색에 대한 세부 규칙을 추가한다.
      * Spring data JPA만을 이용해서 인터페이스만 가지고 기능을 다 사용하기 위해 <br/>
